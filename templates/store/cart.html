@@ -1,0 +1,28 @@
+{% extends "store/base.html" %}
+{% load static %}
+{% block title %}Your cart · {{ store_name }}{% endblock %}
+{% block content %}
+<section class="page-banner"><div class="container"><p class="eyebrow">YOUR SELECTION</p><h1>Your cart</h1></div></section>
+<section class="section container">
+  {% if cart_items %}
+    <div class="cart-layout">
+      <div class="cart-lines">
+        {% for item in cart_items %}
+          <article class="cart-line">
+            <a class="cart-product-image" href="{% url 'product_detail' item.variant.product.slug %}"><img src="{% if item.variant.display_image %}{{ item.variant.display_image.url }}{% else %}{% static 'store/images/bottle.svg' %}{% endif %}" alt="{{ item.variant.product.name }} {{ item.variant.bottle_size }}"></a>
+            <div class="cart-product"><h2><a href="{% url 'product_detail' item.variant.product.slug %}">{{ item.variant.product.name }}</a></h2><p>{{ item.variant.bottle_size }} · KSh {{ item.unit_price|floatformat:0 }} each</p>
+              {% with credit=item.variant.display_image_credit %}{% include 'store/partials/image_credit.html' %}{% endwith %}
+              {% if not item.variant.in_stock %}<p class="text-danger">This item is no longer available in stock.</p>{% endif %}
+              <div class="cart-line-actions"><form method="post">{% csrf_token %}<input type="hidden" name="action" value="update"><input type="hidden" name="variant_id" value="{{ item.variant.pk }}"><label class="visually-hidden" for="qty-{{ item.variant.pk }}">Quantity</label><input id="qty-{{ item.variant.pk }}" type="number" min="1" max="{{ item.variant.stock_quantity }}" name="quantity" value="{{ item.quantity }}"><button type="submit" class="text-link">Update</button></form>
+              <form method="post">{% csrf_token %}<input type="hidden" name="action" value="remove"><input type="hidden" name="variant_id" value="{{ item.variant.pk }}"><button class="remove-link" type="submit">Remove</button></form></div>
+            </div><strong>KSh {{ item.subtotal|floatformat:0 }}</strong>
+          </article>
+        {% endfor %}
+      </div>
+      <aside class="cart-summary"><h2>Order summary</h2><div class="summary-row"><span>Subtotal</span><strong>KSh {{ cart_total|floatformat:0 }}</strong></div><p>Delivery details and availability are confirmed by the shop.</p><a class="btn btn-dark w-100" href="{% url 'checkout' %}">Continue to checkout</a><a class="continue-link" href="{% url 'shop' %}">Continue shopping</a></aside>
+    </div>
+  {% else %}
+    <div class="empty-state"><h2>Your cart is waiting</h2><p>Browse the collection and add something for your next gathering.</p><a class="btn btn-dark" href="{% url 'shop' %}">Browse drinks</a></div>
+  {% endif %}
+</section>
+{% endblock %}

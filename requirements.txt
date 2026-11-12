@@ -1,0 +1,11 @@
+Django>=5.2,<5.3
+django-unfold>=0.60,<1.0
+Pillow>=11.0
+psycopg[binary]>=3.2
+gunicorn>=23.0
+whitenoise>=6.9
+requests>=2.32
+urllib3>=2.2,<3
+certifi
+python-dotenv>=1.0
+reportlab>=4.2,<5

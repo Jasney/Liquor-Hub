@@ -1,0 +1,62 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Shop drinks at Liquor Hub Diani.">
+  <title>{% block title %}{{ store_name }}{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'store/css/site.css' %}">
+</head>
+<body>
+  <header class="site-header">
+    <nav class="navbar navbar-expand-lg container py-3" aria-label="Main navigation">
+      <a class="navbar-brand brand" href="{% url 'home' %}" aria-label="Liquor Hub Diani home">Liquor Hub <span>DIANI</span></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+      <div class="collapse navbar-collapse" id="mainNav">
+        <form class="search-form mx-lg-auto my-3 my-lg-0" action="{% url 'shop' %}" method="get" role="search">
+          <label class="visually-hidden" for="site-search">Search products</label>
+          <input id="site-search" type="search" name="q" value="{{ request.GET.q }}" placeholder="Search drinks and brands" class="form-control">
+          <button type="submit" aria-label="Search products">Search</button>
+        </form>
+        <div class="nav-actions">
+          <a class="phone-link" href="tel:+254768668668"><span aria-hidden="true">Call</span> {{ store_phone }}</a>
+          <a class="cart-link" href="{% url 'cart' %}" aria-label="Shopping cart, {{ cart_item_count }} items">
+            <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false"><path d="M3 4h2l2.2 10.2a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 1.9-1.4L21 8H6M10 20a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm9 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"/></svg>
+            Cart <span>{{ cart_item_count }}</span>
+          </a>
+        </div>
+      </div>
+    </nav>
+  </header>
+  <nav class="category-nav" aria-label="Product categories">
+    <div class="container category-nav-inner">
+      <button class="category-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#categoryNav" aria-controls="categoryNav" aria-expanded="false">Browse categories <span aria-hidden="true">⌄</span></button>
+      <div class="collapse" id="categoryNav">
+        <div class="category-links">
+          <a href="{% url 'shop' %}">All drinks</a>
+          {% for category in nav_categories %}
+            <a href="{% url 'category' category.slug %}">{{ category.name }}</a>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </nav>
+  {% if messages %}
+    <div class="container message-stack" aria-live="polite">
+      {% for message in messages %}<div class="alert alert-{{ message.tags|default:'info' }} py-2">{{ message }}</div>{% endfor %}
+    </div>
+  {% endif %}
+  <main>{% block content %}{% endblock %}</main>
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div><a class="brand footer-brand" href="{% url 'home' %}">Liquor Hub <span>DIANI</span></a><p>Simple shopping for your next gathering.</p></div>
+      <div><h2>Visit us</h2><p>{{ store_location }}</p></div>
+      <div><h2>Get in touch</h2><p><a href="tel:+254768668668">{{ store_phone }}</a><br><a href="mailto:{{ store_email }}">{{ store_email }}</a></p></div>
+    </div>
+    <div class="container footer-bottom">Please drink responsibly. Alcohol is only for adults aged 18 and over. Age confirmation online is not proof of age; delivery age checks may apply.<br>© {% now "Y" %} Liquor Hub Diani</div>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

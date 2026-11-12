@@ -1,0 +1,6 @@
+{% extends "store/base.html" %}
+{% block title %}Contact · {{ store_name }}{% endblock %}
+{% block content %}
+<section class="page-banner"><div class="container"><p class="eyebrow">WE'RE LOCAL</p><h1>Visit or contact us</h1><p>Questions about the shop? Reach the team using the details below.</p></div></section>
+<section class="section container contact-grid"><article class="form-panel"><h2>Find us</h2><p>{{ store_location }}</p></article><article class="form-panel"><h2>Call</h2><p><a href="tel:+254768668668">{{ store_phone }}</a></p></article><article class="form-panel"><h2>Email</h2><p><a href="mailto:{{ store_email }}">{{ store_email }}</a></p></article></section>
+{% endblock %}

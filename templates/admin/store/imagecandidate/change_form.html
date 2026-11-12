@@ -1,0 +1,18 @@
+{% extends "admin/change_form.html" %}
+{% block submit_buttons_bottom %}
+{{ block.super }}
+<div class="submit-row" style="display:flex;gap:12px;flex-wrap:wrap;margin:18px 0;padding:18px;border:1px solid #d1d5db;border-radius:8px">
+  {% if original.published_at %}
+    {% if can_publish_image %}<input type="submit" name="_withdraw_image" value="Withdraw published image">{% endif %}
+  {% else %}
+    {% if can_review_match %}
+      <input type="submit" name="_approve_match" value="Approve product match">
+      <input type="submit" name="_reject_match" value="Reject">
+      <input type="submit" name="_skip_match" value="Skip">
+    {% endif %}
+    {% if can_verify_rights %}<input type="submit" name="_verify_rights" value="Verify commercial reuse rights">{% endif %}
+    {% if can_publish_image %}<input type="submit" name="_publish_image" value="Download and publish verified image">{% endif %}
+  {% endif %}
+  <p style="flex-basis:100%;margin:0">A product match approval does not grant commercial image reuse permission. Publication requires both reviews. Original images are downloaded only when you choose Publish.</p>
+</div>
+{% endblock %}

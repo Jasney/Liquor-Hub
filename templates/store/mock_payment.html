@@ -1,0 +1,11 @@
+{% extends "store/base.html" %}
+{% block title %}Mock payment · {{ store_name }}{% endblock %}
+{% block content %}
+<section class="section container confirmation">
+  <p class="eyebrow">LOCAL TEST FLOW</p><h1>{% if payment.provider == "mpesa" %}Mock M-Pesa payment{% else %}Mock hosted checkout{% endif %}</h1>
+  <p>{% if payment.provider == "mpesa" %}This page simulates an M-Pesa sandbox payment result.{% else %}This page simulates a payment provider's hosted checkout.{% endif %} It does not collect card details and does not transfer money.</p>
+  <div class="order-receipt"><div class="summary-row"><span>Order</span><strong>{{ order.order_number }}</strong></div><div class="summary-row"><span>Amount</span><strong>KSh {{ payment.amount|floatformat:0 }}</strong></div><div class="summary-row"><span>Current status</span><strong>{{ payment.get_status_display }}</strong></div></div>
+  {% if payment.status == "pending" %}<div class="mock-actions"><form method="post">{% csrf_token %}<button class="btn btn-dark" name="result" value="success">Simulate successful payment</button></form><form method="post">{% csrf_token %}<button class="btn btn-outline-dark" name="result" value="failed">Simulate failed payment</button></form></div>{% else %}<p>This payment already has a result recorded.</p>{% endif %}
+  <a class="continue-link" href="{% url 'order_success' %}?number={{ order.order_number }}">Return to order</a>
+</section>
+{% endblock %}

@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Age confirmation · Liquor Hub Diani</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/static/store/css/site.css">
+</head>
+<body class="age-page">
+  <main class="age-card">
+    <p class="age-brand">Liquor Hub <span>DIANI</span></p>
+    <h1>Welcome. Are you 18 or older?</h1>
+    <p>Alcohol is for adults only. By entering, you confirm that you are at least 18 years old. This online confirmation is an initial safeguard, not proof of age. Age may be checked at delivery.</p>
+    {% if invalid_confirmation %}<div class="alert alert-warning">Please confirm you are 18 or older to continue.</div>{% endif %}
+    <form method="post" action="{% url 'age_confirm' %}">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ request.get_full_path }}">
+      <button name="confirm" value="yes" class="btn btn-dark w-100 mb-2">I am 18 or older — enter</button>
+    </form>
+    <a class="btn btn-outline-secondary w-100" href="https://www.google.com/">I am under 18</a>
+    <small class="d-block mt-4">Please enjoy responsibly. Never drink and drive.</small>
+  </main>
+</body>
+</html>

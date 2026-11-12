@@ -1,0 +1,22 @@
+{% extends "store/base.html" %}
+{% load static %}
+{% block title %}{% if category %}{{ category.name }} · {% endif %}Shop · {{ store_name }}{% endblock %}
+{% block content %}
+<section class="page-banner"><div class="container"><p class="eyebrow">THE COLLECTION</p><h1>{% if category %}{{ category.name }}{% else %}Shop all drinks{% endif %}</h1><p>Explore the collection. Prices are in Kenyan shillings; stock availability is confirmed by the shop.</p></div></section>
+<section class="section container">
+  <div class="shop-toolbar">
+    <p>{% if query %}Results for “{{ query }}” · {% endif %}{{ page_obj.paginator.count }} product{{ page_obj.paginator.count|pluralize }}</p>
+    <div class="category-pills"><a class="{% if not category %}selected{% endif %}" href="{% url 'shop' %}">All</a>{% for item in categories %}<a class="{% if category == item %}selected{% endif %}" href="{% url 'category' item.slug %}">{{ item.name }}</a>{% endfor %}</div>
+  </div>
+  <div class="product-grid">
+    {% for product in page_obj %}{% include "store/partials/product_card.html" with product=product %}{% empty %}
+      <div class="empty-state"><h2>No drinks found</h2><p>Try another search or browse all categories.</p><a class="btn btn-dark" href="{% url 'shop' %}">Browse all drinks</a></div>
+    {% endfor %}
+  </div>
+  {% if page_obj.has_other_pages %}<nav class="pagination-nav" aria-label="Pagination">
+    {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query|urlencode }}{% endif %}">← Previous</a>{% endif %}
+    <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query|urlencode }}{% endif %}">Next →</a>{% endif %}
+  </nav>{% endif %}
+</section>
+{% endblock %}

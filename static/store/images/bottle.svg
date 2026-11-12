@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 420" role="img" aria-label="Decorative bottle illustration">
+  <defs>
+    <linearGradient id="glass" x1="0" x2="1">
+      <stop offset="0" stop-color="#604c24"/>
+      <stop offset=".45" stop-color="#b49a5b"/>
+      <stop offset="1" stop-color="#463819"/>
+    </linearGradient>
+  </defs>
+  <path fill="#43341c" d="M93 20h54v56l12 19c13 8 18 23 18 42v238c0 20-15 35-35 35H98c-20 0-35-15-35-35V137c0-19 5-34 18-42l12-19z"/>
+  <path fill="url(#glass)" d="M101 28h38v54l14 20c10 6 15 17 15 35v237c0 11-9 20-20 20H92c-11 0-20-9-20-20V137c0-18 5-29 15-35l14-20z"/>
+  <path fill="#d6bb78" d="M98 150h44v106H98z"/>
+  <path fill="#41341e" d="M103 166h34v3h-34zm0 9h34v2h-34zm5 62h24v3h-24z"/>
+  <path fill="#d6bb78" d="M96 26h48v12H96z"/>
+  <path fill="#ffffff" opacity=".15" d="M84 138h8v213h-8z"/>
+</svg>

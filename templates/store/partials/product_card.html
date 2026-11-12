@@ -1,0 +1,41 @@
+{% load static %}
+{% with variant=product.listing_variant %}
+<article class="product-card">
+  <a href="{% url 'product_detail' product.slug %}" class="product-image">
+    {% if variant %}
+      {% if variant.display_image %}<img src="{{ variant.display_image.url }}" alt="{{ product.name }} {{ variant.bottle_size }}" loading="lazy">{% else %}<img src="{% static 'store/images/bottle.svg' %}" alt="Illustration placeholder for {{ product.name }}">{% endif %}
+    {% elif product.display_image %}<img src="{{ product.display_image.url }}" alt="{{ product.name }}" loading="lazy">{% else %}<img src="{% static 'store/images/bottle.svg' %}" alt="Illustration placeholder for {{ product.name }}">{% endif %}
+    {% if product.is_featured %}<span class="product-badge">Featured</span>{% endif %}
+    <span class="availability-badge{% if not product.has_stock %} sold-out{% endif %}">{% if product.has_stock %}In stock{% else %}Out of stock{% endif %}</span>
+  </a>
+  <div class="product-info">
+    <p class="product-category">{{ product.category.name }}</p>
+    <h3><a href="{% url 'product_detail' product.slug %}">{{ product.name }}</a></h3>
+    {% if variant %}{% with credit=variant.display_image_credit %}{% include 'store/partials/image_credit.html' %}{% endwith %}
+    {% else %}{% with credit=product.display_image_credit %}{% include 'store/partials/image_credit.html' %}{% endwith %}{% endif %}
+    {% if product.variants.all|length > 1 %}
+      <p class="product-size-heading">Bottle sizes</p>
+      <ul class="product-sizes">
+        {% for size in product.variants.all %}
+          <li>
+            <span>{% if size.bottle_size %}{{ size.bottle_size }}{% else %}Size not specified{% endif %}{% if not size.in_stock %}<small>Out of stock</small>{% endif %}</span>
+            <strong>KSh {{ size.current_price|floatformat:"-2" }}</strong>
+          </li>
+        {% endfor %}
+      </ul>
+    {% elif variant %}<p class="product-size-heading">Bottle size: {% if variant.bottle_size %}{{ variant.bottle_size }}{% else %}Not specified{% endif %}</p><p class="product-price">KSh {{ variant.current_price|floatformat:"-2" }}</p>
+    {% else %}<p class="product-price unavailable">Currently unavailable</p>{% endif %}
+      {% if product.variants.all|length > 1 and product.has_stock %}
+        <a class="btn btn-brand" href="{% url 'product_detail' product.slug %}">Choose bottle size</a>
+      {% elif variant and variant.in_stock %}
+        <form method="post" action="{% url 'cart_add' variant.pk %}" class="product-card-form">
+          {% csrf_token %}
+          <input type="hidden" name="quantity" value="1">
+          <button class="btn btn-brand" type="submit">Add to cart</button>
+        </form>
+      {% else %}
+        <a class="btn btn-brand btn-unavailable" href="{% url 'product_detail' product.slug %}">View details</a>
+      {% endif %}
+  </div>
+</article>
+{% endwith %}

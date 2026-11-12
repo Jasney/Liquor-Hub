@@ -1,0 +1,23 @@
+{% extends "store/base.html" %}
+{% block title %}Order {{ order.order_number }} · {{ store_name }}{% endblock %}
+{% block content %}
+<section class="section container confirmation">
+  <div class="confirmation-mark">✓</div><p class="eyebrow">ORDER RECEIVED</p><h1>Thank you, {{ order.customer_name }}.</h1>
+  <p>Your order <strong>{{ order.order_number }}</strong> has been received.</p>
+  <div class="order-receipt">
+    {% for item in order.items.all %}<div class="summary-product"><span>{{ item.quantity }} × {{ item.variant.product.name }}<small>{{ item.variant.bottle_size }} · KSh {{ item.unit_price|floatformat:0 }} each</small></span><strong>KSh {{ item.subtotal|floatformat:0 }}</strong></div>{% endfor %}
+    <div class="summary-row summary-total"><span>Total</span><strong>KSh {{ order.order_total|floatformat:0 }}</strong></div>
+    <div class="summary-row"><span>Payment</span><strong>{{ order.get_payment_method_display }}</strong></div>
+    <div class="summary-row"><span>Payment status</span><strong>{{ order.get_payment_status_display }}</strong></div>
+  </div>
+  {% if order.payment_method == "delivery" %}<p>Payment is pending and will only be marked received after the shop confirms delivery.</p>
+  {% elif payment and payment.status == "pending" %}
+    {% if payment.provider == "mpesa" and daraja_ready %}<p>Check your phone for the M-Pesa STK Push prompt. This order remains unpaid until a verified callback is received.</p>
+    {% elif payment.provider == "pesapal" and pesapal_ready %}<p>Complete payment in the hosted PesaPal checkout. This order remains unpaid until the provider confirms payment.</p>
+    {% else %}<p class="mock-label">MOCK PAYMENT · No money has been transferred. Payment is still pending.</p><a class="btn btn-gold" href="{% url 'mock_payment' order.order_number %}">Open mock payment</a>{% endif %}
+  {% elif order.payment_status == "paid" %}<p class="text-success">Payment confirmed{% if payment.transaction_reference %}: {{ payment.transaction_reference }}{% endif %}.</p>{% if receipt_token %}<a class="btn btn-gold" href="{% url 'download_receipt' order.order_number receipt_token %}">Download receipt PDF</a>{% endif %}
+  {% else %}<p>Payment is not confirmed. Contact the shop if you need help.</p>{% endif %}
+  <p class="responsible-note">The shop may verify the recipient's age at delivery.</p>
+  <a class="btn btn-dark" href="{% url 'shop' %}">Continue browsing</a>
+</section>
+{% endblock %}

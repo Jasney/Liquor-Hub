@@ -1,0 +1,64 @@
+{% extends "store/base.html" %}
+{% load static %}
+{% block title %}{{ product.name }} · {{ store_name }}{% endblock %}
+{% block content %}
+<div class="container product-detail">
+  <nav class="breadcrumbs"><a href="{% url 'home' %}">Home</a><span>/</span><a href="{% url 'category' product.category.slug %}">{{ product.category.name }}</a><span>/</span><span>{{ product.name }}</span></nav>
+  <div class="detail-grid">
+    <div>
+      <div class="detail-image"><img id="selected-product-image" src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'store/images/bottle.svg' %}{% endif %}" alt="{{ product.name }}"></div>
+      <p id="selected-image-credit" class="image-credit" style="font-size:0.75rem"></p>
+      {% if product.additional_images.all %}<div class="detail-gallery">{% for image in product.additional_images.all %}<img src="{{ image.image.url }}" alt="{{ image.alt_text|default:product.name }}">{% endfor %}</div>{% endif %}
+    </div>
+    <div class="detail-copy">
+      <p class="eyebrow">{{ product.category.name }}</p>
+      <h1>{{ product.name }}</h1>
+      <p class="price-note">Catalogue price in KSh.</p>
+      {% if product.description %}<p class="detail-description">{{ product.description }}</p>{% endif %}
+      <form method="post" action="" class="variant-form" id="add-to-cart-form">
+        {% csrf_token %}
+        <label for="variant-select">Bottle size</label>
+        <select id="variant-select" class="form-select" name="variant" required>
+          {% for variant in product.variants.all %}
+            {% with credit=variant.display_image_credit %}
+            <option value="{{ variant.pk }}" data-price="{{ variant.current_price }}" data-image="{% if variant.display_image %}{{ variant.display_image.url }}{% else %}{% static 'store/images/bottle.svg' %}{% endif %}" data-credit-text="{% if credit %}{{ credit.credit_text }}{% endif %}" data-credit-url="{% if credit %}{{ credit.credit_url }}{% endif %}" {% if not variant.in_stock %}disabled{% endif %}>
+              {{ variant.bottle_size }} · KSh {{ variant.current_price|floatformat:0 }}{% if not variant.in_stock %} · Out of stock{% endif %}
+            </option>
+            {% endwith %}
+          {% endfor %}
+        </select>
+        <div class="stock-line" id="stock-line">Stock is confirmed again at checkout.</div>
+        <label for="quantity">Quantity</label><input id="quantity" class="form-control quantity-input" type="number" name="quantity" value="1" min="1" required>
+        <button class="btn btn-dark btn-lg w-100" type="submit" id="add-button">Add to cart</button>
+        {% for variant in product.variants.all %}<input type="hidden" class="variant-add-url" data-id="{{ variant.pk }}" data-url="{% url 'cart_add' variant.pk %}">{% endfor %}
+      </form>
+      <div class="responsible-note">Alcohol is for adults aged 18+. Please drink responsibly. Age confirmation at checkout is not proof of age; delivery checks may apply.</div>
+    </div>
+  </div>
+</div>
+<script>
+  const variantSelect = document.getElementById("variant-select");
+  const addForm = document.getElementById("add-to-cart-form");
+  const addButton = document.getElementById("add-button");
+  function updateAddForm() {
+    const selected = variantSelect.options[variantSelect.selectedIndex] || variantSelect.options[0];
+    if (!selected) { addButton.disabled = true; return; }
+    const route = document.querySelector(`.variant-add-url[data-id="${selected.value}"]`);
+    addForm.action = route ? route.dataset.url : "";
+    addButton.disabled = !selected.value || selected.disabled;
+    document.getElementById("selected-product-image").src = selected.dataset.image;
+    const credit = document.getElementById("selected-image-credit");
+    credit.replaceChildren();
+    if (selected.dataset.creditText && selected.dataset.creditUrl) {
+      const link = document.createElement("a");
+      link.textContent = selected.dataset.creditText;
+      link.href = selected.dataset.creditUrl;
+      link.rel = "noopener noreferrer";
+      link.target = "_blank";
+      credit.append(link);
+    }
+  }
+  variantSelect.addEventListener("change", updateAddForm);
+  updateAddForm();
+</script>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "store/base.html" %}
+{% block title %}Checkout · {{ store_name }}{% endblock %}
+{% block content %}
+<section class="page-banner"><div class="container"><p class="eyebrow">ALMOST THERE</p><h1>Checkout</h1><p>No account needed. Stock and prices are rechecked before the order is placed.</p></div></section>
+<section class="section container">
+  <form method="post" class="checkout-layout">{% csrf_token %}
+    <div class="checkout-fields">
+      {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+      <section class="form-panel"><h2>Delivery details</h2>
+        {% for field in form %}{% if field.name != "payment_method" %}<div class="mb-3"><label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% if field.errors %}<div class="field-error">{{ field.errors|join:", " }}</div>{% endif %}</div>{% endif %}{% endfor %}
+      </section>
+      <section class="form-panel"><h2>Payment method</h2>
+        {% for radio in form.payment_method %}<label class="payment-choice">{{ radio.tag }}<span><strong>{{ radio.choice_label }}</strong>{% if radio.choice_value == "mpesa" %}{% if pesapal_mode %}<small>Continue to hosted M-Pesa checkout.</small>{% else %}<small>Local mock by default; Daraja sandbox is available when configured.</small>{% endif %}{% elif radio.choice_value == "card" %}{% if pesapal_mode %}<small>Continue to hosted Visa/Mastercard checkout. Card details stay with the provider.</small>{% else %}<small>Local hosted-checkout mock. No card details are collected.</small>{% endif %}{% else %}<small>Pay the shop on delivery. Payment remains pending until received.</small>{% endif %}</span></label>{% endfor %}
+        {% if form.payment_method.errors %}<div class="field-error">{{ form.payment_method.errors|join:", " }}</div>{% endif %}
+      </section>
+      <p class="responsible-note">By placing the order, you confirm that the recipient is 18 or older. The delivery person may request age verification.</p>
+    </div>
+    <aside class="cart-summary checkout-summary"><h2>Your order</h2>
+      {% for item in cart_items %}<div class="summary-product"><span>{{ item.quantity }} × {{ item.variant.product.name }}<small>{{ item.variant.bottle_size }}</small></span><strong>KSh {{ item.subtotal|floatformat:0 }}</strong></div>{% endfor %}
+      <div class="summary-row summary-total"><span>Total</span><strong>KSh {{ cart_total|floatformat:0 }}</strong></div>
+      <small class="price-note">Stock and prices are rechecked before order placement.</small>
+      <button type="submit" class="btn btn-dark w-100 mt-3">Place order</button>
+      <a class="continue-link" href="{% url 'cart' %}">Back to cart</a>
+    </aside>
+  </form>
+</section>
+{% endblock %}

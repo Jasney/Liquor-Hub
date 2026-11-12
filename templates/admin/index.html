@@ -1,0 +1,113 @@
+{% extends 'admin/base.html' %}
+{% load i18n %}
+
+{% block title %}Store operations | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block branding %}
+    {% include "unfold/helpers/site_branding.html" %}
+{% endblock %}
+
+{% block content %}
+    <div class="lh-dashboard">
+        <section class="lh-dashboard-hero" aria-labelledby="lh-dashboard-title">
+            <div class="lh-dashboard-mark" aria-hidden="true">LH</div>
+            <div class="lh-dashboard-intro">
+                <p class="lh-dashboard-kicker">LIQUOR HUB · DIANI</p>
+                <h1 id="lh-dashboard-title">Store operations</h1>
+                <p class="lh-dashboard-summary">A clear view of the catalogue, stock and orders that need attention.</p>
+                <p class="lh-dashboard-date">{{ dashboard_date }}</p>
+            </div>
+            <div class="lh-dashboard-hero-actions">
+                {% if dashboard_can_view_products %}
+                    <a class="lh-button lh-button-light" href="{% url 'admin:store_product_changelist' %}">Manage products <span aria-hidden="true">→</span></a>
+                {% endif %}
+                {% if dashboard_can_view_orders %}
+                    <a class="lh-button lh-button-outline" href="{% url 'admin:store_order_changelist' %}">View orders</a>
+                {% endif %}
+            </div>
+        </section>
+
+        <section class="lh-dashboard-stats" aria-label="Store summary">
+            {% for card in dashboard_cards %}
+                <a class="lh-stat-card" href="{{ card.href }}">
+                    <span class="lh-stat-icon material-symbols-outlined" aria-hidden="true">{{ card.icon }}</span>
+                    <span class="lh-stat-label">{{ card.label }}</span>
+                    <strong class="lh-stat-value">{{ card.value }}</strong>
+                    <span class="lh-stat-detail">{{ card.detail }}</span>
+                </a>
+            {% endfor %}
+        </section>
+
+        {% if dashboard_best_sellers %}
+            <section class="lh-operations-panel" aria-labelledby="lh-best-sellers-title">
+                <div class="lh-panel-heading"><div><p class="lh-dashboard-kicker">COMPLETED SALES</p><h2 id="lh-best-sellers-title">Best-selling products</h2></div></div>
+                <div class="lh-tool-list">
+                    {% for item in dashboard_best_sellers %}
+                        <div class="lh-tool-row"><span class="lh-tool-copy"><strong>{{ item.order_item__variant__product__name }}</strong><small>{{ item.quantity }} units sold · KES {{ item.revenue|floatformat:2 }}</small></span></div>
+                    {% empty %}<p>No completed sales yet.</p>{% endfor %}
+                </div>
+            </section>
+        {% endif %}
+
+        <div class="lh-dashboard-lower">
+            <section class="lh-operations-panel" aria-labelledby="lh-tools-title">
+                <div class="lh-panel-heading">
+                    <div>
+                        <p class="lh-dashboard-kicker">QUICK ACCESS</p>
+                        <h2 id="lh-tools-title">Day-to-day tools</h2>
+                    </div>
+                    <span class="lh-panel-note">Shop management</span>
+                </div>
+
+                <div class="lh-tool-list">
+                    {% if dashboard_can_view_products %}
+                        <a class="lh-tool-row" href="{% url 'admin:store_product_changelist' %}">
+                            <span class="lh-tool-symbol material-symbols-outlined" aria-hidden="true">inventory_2</span>
+                            <span class="lh-tool-copy"><strong>Product catalogue</strong><small>Prices, sizes and stock levels</small></span>
+                            <span class="lh-tool-arrow" aria-hidden="true">→</span>
+                        </a>
+                    {% endif %}
+                    {% if dashboard_can_view_categories %}
+                        <a class="lh-tool-row" href="{% url 'admin:store_category_changelist' %}">
+                            <span class="lh-tool-symbol material-symbols-outlined" aria-hidden="true">shelves</span>
+                            <span class="lh-tool-copy"><strong>Categories</strong><small>Organise the shop departments</small></span>
+                            <span class="lh-tool-arrow" aria-hidden="true">→</span>
+                        </a>
+                    {% endif %}
+                    {% if dashboard_can_view_orders %}
+                        <a class="lh-tool-row" href="{% url 'admin:store_order_changelist' %}">
+                            <span class="lh-tool-symbol material-symbols-outlined" aria-hidden="true">shopping_bag</span>
+                            <span class="lh-tool-copy"><strong>Orders</strong><small>Review and fulfil customer orders</small></span>
+                            <span class="lh-tool-arrow" aria-hidden="true">→</span>
+                        </a>
+                    {% endif %}
+                    {% if dashboard_can_view_payments %}
+                        <a class="lh-tool-row" href="{% url 'admin:store_payment_changelist' %}">
+                            <span class="lh-tool-symbol material-symbols-outlined" aria-hidden="true">payments</span>
+                            <span class="lh-tool-copy"><strong>Payments</strong><small>Check payment status and references</small></span>
+                            <span class="lh-tool-arrow" aria-hidden="true">→</span>
+                        </a>
+                    {% endif %}
+                </div>
+            </section>
+
+            <aside class="lh-activity-panel" aria-label="Recent admin activity">
+                <div class="lh-panel-heading">
+                    <div>
+                        <p class="lh-dashboard-kicker">AUDIT TRAIL</p>
+                        <h2>Recent activity</h2>
+                    </div>
+                </div>
+                {% include "unfold/helpers/history.html" %}
+                {% if not admin_log %}
+                    <p class="lh-empty-activity">Product and order changes will appear here as the team works.</p>
+                {% endif %}
+            </aside>
+        </div>
+
+        <footer class="lh-dashboard-footer">
+            <span>Liquor Hub Diani</span>
+            <span>Store administration</span>
+        </footer>
+    </div>
+{% endblock %}

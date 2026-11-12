@@ -1,0 +1,42 @@
+{% extends "store/base.html" %}
+{% load static %}
+{% block title %}{{ store_name }} · Your Diani drinks shop{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="container hero-inner">
+    <div class="hero-copy">
+      <p class="eyebrow">YOUR LOCAL DRINKS SHOP</p>
+      <h1>Make room for<br><span>good company.</span></h1>
+      <p>Explore a considered selection of whisky, gin, wine and beer from your neighbourhood shop in Diani.</p>
+      <a class="btn btn-gold" href="{% url 'shop' %}">Explore the shop <span aria-hidden="true">→</span></a>
+    </div>
+    <div class="hero-art" aria-hidden="true"><div class="hero-circle"></div><img src="{% static 'store/images/bottle.svg' %}" alt=""></div>
+    <div class="hero-note">GOOD TASTE.<br>GOOD COMPANY.</div>
+  </div>
+</section>
+<div class="container"><p class="catalogue-note">Prices are from the Liquor Hub DIANI catalogue. Stock availability is confirmed by the shop.</p></div>
+<section class="section container">
+  <div class="section-heading"><div><p class="eyebrow">FIND YOUR FAVOURITE</p><h2>Shop by category</h2></div><a class="text-link" href="{% url 'shop' %}">View all drinks →</a></div>
+  <div class="category-grid">
+    {% for category in categories %}
+      <a class="category-card" href="{% url 'category' category.slug %}">
+        <div class="category-visual category-tone-{{ forloop.counter }}">{% if category.image %}<img src="{{ category.image.url }}" alt="">{% else %}<span>{{ category.name|slice:":1" }}</span>{% endif %}</div>
+        <div><h3>{{ category.name }}</h3><p>{{ category.active_product_count }} selections <span>↗</span></p></div>
+      </a>
+    {% empty %}
+      <p>Categories are being prepared. Please check back soon.</p>
+    {% endfor %}
+  </div>
+</section>
+<section class="section featured-section">
+  <div class="container">
+    <div class="section-heading"><div><p class="eyebrow">A FEW CUSTOMER FAVOURITES</p><h2>Most popular</h2></div><a class="text-link" href="{% url 'shop' %}">Shop all →</a></div>
+    <div class="product-grid">
+      {% for product in featured_products %}{% include "store/partials/product_card.html" with product=product %}{% empty %}
+        <div class="empty-state">No products yet. Add products in the admin dashboard.</div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+<section class="delivery-band"><div class="container delivery-content"><div><p class="eyebrow">LOCAL TO DIANI</p><h2>Your neighbourhood shop, just a little closer.</h2></div><p>Order online for local delivery. Delivery availability, timing and age checks are confirmed by the shop.</p><a class="btn btn-outline-dark" href="{% url 'contact' %}">Get in touch</a></div></section>
+{% endblock %}
